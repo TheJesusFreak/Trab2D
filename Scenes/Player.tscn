@@ -228,19 +228,35 @@ anims/jump = SubResource( 4 )
 anims/run = SubResource( 5 )
 
 [node name="collision" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2( 0, 2 )
 shape = SubResource( 3 )
 
 [node name="raycasts" type="Node2D" parent="."]
 
 [node name="raycast" type="RayCast2D" parent="raycasts"]
+visible = false
 position = Vector2( -6, 13 )
 enabled = true
-cast_to = Vector2( 0, 15 )
+cast_to = Vector2( 0, 12 )
 collision_mask = 8
 
 [node name="raycast2" type="RayCast2D" parent="raycasts"]
+visible = false
 position = Vector2( 6, 13 )
 enabled = true
-cast_to = Vector2( 0, 15 )
+cast_to = Vector2( 0, 12 )
 collision_mask = 8
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+limit_left = -32
+limit_smoothed = true
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+smoothing_enabled = true
+smoothing_speed = 12.0
+drag_margin_left = 0.03
+drag_margin_right = 0.03
+editor_draw_limits = true
+editor_draw_drag_margin = true
