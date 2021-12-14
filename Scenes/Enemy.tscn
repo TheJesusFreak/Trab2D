@@ -1,0 +1,320 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://assets/Martial Hero/Sprites/Idle.png" type="Texture" id=1]
+[ext_resource path="res://assets/Martial Hero/Sprites/Run.png" type="Texture" id=2]
+[ext_resource path="res://assets/Martial Hero/Sprites/Take Hit - white silhouette.png" type="Texture" id=3]
+[ext_resource path="res://Prefabs/Hitbox.tscn" type="PackedScene" id=4]
+
+[sub_resource type="GDScript" id=8]
+script/source = "extends KinematicBody2D
+
+export var speed = 64
+export var health = 3
+var velocity = Vector2.ZERO
+var move_direction = -1
+var gravity = 1200
+var hitted = false
+var anim = \"run\"
+
+onready var raycast = $ray_wall
+
+func _ready():
+	var playerSignal = get_tree().get_root().find_node(\"Player\", true, false)
+	playerSignal.connect(\"hitEnemy\", self, \"getHitted\")
+	
+func _physics_process(delta: float) -> void:
+
+	velocity.x = speed * move_direction
+	velocity.y += gravity * delta
+	velocity = move_and_slide(velocity)
+	
+	if move_direction == 1:
+		$texture.flip_h = false
+	else:
+		$texture.flip_h = true
+		
+	if raycast.is_colliding():
+		$anim.play(\"idle\")
+
+	_set_animation()
+
+func _on_anim_animation_finished(anim_name):
+	if anim_name == \"idle\":
+		$texture.flip_h != $texture.flip_h
+		raycast.scale.x *= -1
+		move_direction *= -1
+		$anim.play(\"run\")
+
+func _set_animation():
+	anim = \"run\"
+	if $ray_wall.is_colliding():
+		anim = \"idle\"
+	elif velocity.x != 0:
+		anim = \"run\"
+	
+	if hitted:
+		anim = \"hit\"
+	
+	if Input.is_action_pressed(\"hit\"):
+		velocity.x = 0
+		
+	if $anim.assigned_animation != anim:
+		$anim.play(anim)
+
+func getHitted(body):
+	get_tree().get_root().find_node(body.name)
+	hitted = true
+	print(body.name)
+	print(body.health)
+	body.health -= 1
+	$anim.play(\"hit\")
+	hitted = false
+	get_node(\"Hitbox/collision\").set_deferred(\"disabled\", true)
+	yield(get_tree().create_timer(0.5), \"timeout\")
+	if health < 1:
+		get_node(\"Hitbox/collision\").set_deferred(\"disabled\", true)
+		body.queue_free()
+		#health = 3
+	get_node(\"Hitbox/collision\").set_deferred(\"disabled\", false)
+	
+	
+"
+
+[sub_resource type="RectangleShape2D" id=14]
+extents = Vector2( 14.75, 18.5 )
+
+[sub_resource type="StreamTexture" id=9]
+load_path = "res://.import/Idle.png-67f7dc3fe2d1aedc780a2d01d454b66d.stex"
+
+[sub_resource type="Animation" id=10]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Enemy1/texture:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ ExtResource( 2 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Enemy1/texture:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 8 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Enemy1/texture:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("texture:frame")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("texture:hframes")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 8 ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("texture:texture")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ ExtResource( 1 ) ]
+}
+
+[sub_resource type="Animation" id=11]
+resource_name = "hit"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("texture:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 3 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("texture:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 4 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("texture:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3 ]
+}
+
+[sub_resource type="Animation" id=12]
+resource_name = "idle"
+length = 1.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("texture:hframes")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.846981 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 8 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("texture:texture")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.846981 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("texture:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.846981, 0.9, 1, 1.1, 1.2, 1.3, 1.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5, 6, 0, 1, 1, 2, 3, 4, 5, 6, 7 ]
+}
+
+[sub_resource type="Animation" id=13]
+resource_name = "run"
+length = 0.8
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("texture:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 2 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("texture:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 8 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("texture:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+}
+
+[node name="Enemy1" type="KinematicBody2D"]
+position = Vector2( 1, 0 )
+scale = Vector2( 0.8, 0.8 )
+collision_layer = 2
+collision_mask = 9
+script = SubResource( 8 )
+
+[node name="collision" type="CollisionShape2D" parent="."]
+position = Vector2( -2, -21 )
+shape = SubResource( 14 )
+
+[node name="texture" type="Sprite" parent="."]
+position = Vector2( -100, -123.75 )
+texture = SubResource( 9 )
+centered = false
+flip_h = true
+hframes = 8
+
+[node name="anim" type="AnimationPlayer" parent="."]
+autoplay = "run"
+anims/RESET = SubResource( 10 )
+anims/hit = SubResource( 11 )
+anims/idle = SubResource( 12 )
+anims/run = SubResource( 13 )
+
+[node name="ray_wall" type="RayCast2D" parent="."]
+position = Vector2( -3, -22 )
+enabled = true
+cast_to = Vector2( -24, 0 )
+collision_mask = 8
+
+[node name="Hitbox" parent="." instance=ExtResource( 4 )]
+position = Vector2( -2.5, 0 )
+
+[connection signal="animation_finished" from="anim" to="." method="_on_anim_animation_finished"]
+[connection signal="body_entered" from="Hitbox" to="." method="_on_Hitbox_body_entered"]

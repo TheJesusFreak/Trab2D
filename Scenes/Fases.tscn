@@ -1,0 +1,69 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Scripts/Fases.gd" type="Script" id=1]
+[ext_resource path="res://assets/pixel adventure/Menu/Levels/01.png" type="Texture" id=2]
+[ext_resource path="res://assets/pixel adventure/Menu/Levels/02.png" type="Texture" id=3]
+[ext_resource path="res://assets/pixel adventure/Menu/Buttons/Back.png" type="Texture" id=4]
+[ext_resource path="res://assets/Free Pixel Art Forest/Preview/Background.png" type="Texture" id=6]
+
+[node name="Fases" type="Node2D"]
+position = Vector2( 307.41, 157.271 )
+script = ExtResource( 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = -174.381
+margin_top = -50.1629
+margin_right = -67.381
+margin_bottom = 50.8371
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Volta" type="Button" parent="."]
+margin_left = -300.0
+margin_top = -152.0
+margin_right = -247.0
+margin_bottom = -104.0
+icon = ExtResource( 4 )
+flat = true
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="."]
+margin_left = -131.41
+margin_top = -45.271
+margin_right = -58.41
+margin_bottom = 29.729
+icon = ExtResource( 2 )
+flat = true
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button2" type="Button" parent="."]
+margin_left = -19.41
+margin_top = -45.271
+margin_right = 54.59
+margin_bottom = 29.729
+icon = ExtResource( 3 )
+flat = true
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="ParallaxBackground"]
+
+[node name="Sprite" type="Sprite" parent="ParallaxBackground/ParallaxLayer2"]
+position = Vector2( 259.907, 8.88323 )
+scale = Vector2( 0.560144, 0.793778 )
+texture = ExtResource( 6 )
+
+[connection signal="pressed" from="Volta" to="." method="_on_Volta_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_Button2_pressed"]
